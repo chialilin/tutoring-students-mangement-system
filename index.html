@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>補習班學習管理系統</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="header-logo">
+        <span class="logo-icon">📚</span>
+        <div>
+          <h1 class="header-title">學習管理系統</h1>
+          <p class="header-subtitle">補習班專用管理工具</p>
+        </div>
+      </div>
+      <div class="header-date" id="headerDate"></div>
+    </div>
+  </header>
+
+  <!-- Navigation Tabs -->
+  <nav class="tab-nav">
+    <div class="tab-nav-inner">
+      <button class="tab-btn active" data-tab="students">
+        <span class="tab-icon">👤</span>
+        <span>學生管理</span>
+      </button>
+      <button class="tab-btn" data-tab="sessions">
+        <span class="tab-icon">📖</span>
+        <span>上課紀錄</span>
+      </button>
+      <button class="tab-btn" data-tab="homework">
+        <span class="tab-icon">📝</span>
+        <span>作業追蹤</span>
+      </button>
+      <button class="tab-btn" data-tab="grades">
+        <span class="tab-icon">📊</span>
+        <span>學習進度</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- ===================== TAB: 學生管理 ===================== -->
+    <section id="tab-students" class="tab-panel active">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">學生管理</h2>
+          <p class="panel-desc">管理所有學生資料</p>
+        </div>
+        <button class="btn btn-primary" id="btnAddStudent">
+          <span>＋</span> 新增學生
+        </button>
+      </div>
+
+      <div class="student-grid" id="studentGrid">
+        <!-- populated by JS -->
+      </div>
+
+      <!-- Student Detail Panel -->
+      <div class="student-detail-overlay" id="studentDetailOverlay">
+        <div class="student-detail-panel" id="studentDetailPanel">
+          <button class="detail-close-btn" id="closeStudentDetail">✕</button>
+          <div id="studentDetailContent"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== TAB: 上課紀錄 ===================== -->
+    <section id="tab-sessions" class="tab-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">上課紀錄</h2>
+          <p class="panel-desc">記錄每次上課情況</p>
+        </div>
+        <button class="btn btn-primary" id="btnAddSession">
+          <span>＋</span> 新增紀錄
+        </button>
+      </div>
+
+      <div class="filter-bar">
+        <label class="filter-label">篩選學生：</label>
+        <select class="filter-select" id="sessionStudentFilter">
+          <option value="">全部學生</option>
+        </select>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="data-table" id="sessionsTable">
+          <thead>
+            <tr>
+              <th>日期</th>
+              <th>學生</th>
+              <th>科目</th>
+              <th>時長（分鐘）</th>
+              <th>主題</th>
+              <th>表現</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="sessionsTableBody">
+            <!-- populated by JS -->
+          </tbody>
+        </table>
+        <div class="empty-state" id="sessionsEmpty">
+          <div class="empty-icon">📖</div>
+          <p>還沒有上課紀錄</p>
+          <p class="empty-hint">點擊「新增紀錄」開始記錄上課情況</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== TAB: 作業追蹤 ===================== -->
+    <section id="tab-homework" class="tab-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">作業追蹤</h2>
+          <p class="panel-desc">追蹤學生作業完成狀況</p>
+        </div>
+        <button class="btn btn-primary" id="btnAddHomework">
+          <span>＋</span> 指派作業
+        </button>
+      </div>
+
+      <div class="filter-bar">
+        <label class="filter-label">篩選學生：</label>
+        <select class="filter-select" id="hwStudentFilter">
+          <option value="">全部學生</option>
+        </select>
+        <label class="filter-label" style="margin-left:16px;">篩選狀態：</label>
+        <select class="filter-select" id="hwStatusFilter">
+          <option value="">全部狀態</option>
+          <option value="未完成">未完成</option>
+          <option value="已完成">已完成</option>
+          <option value="逾期">逾期</option>
+        </select>
+      </div>
+
+      <div class="homework-grid" id="homeworkGrid">
+        <!-- populated by JS -->
+      </div>
+      <div class="empty-state" id="homeworkEmpty">
+        <div class="empty-icon">📝</div>
+        <p>還沒有作業記錄</p>
+        <p class="empty-hint">點擊「指派作業」開始追蹤學生作業</p>
+      </div>
+    </section>
+
+    <!-- ===================== TAB: 學習進度 ===================== -->
+    <section id="tab-grades" class="tab-panel">
+      <div class="panel-header">
+        <div>
+          <h2 class="panel-title">學習進度</h2>
+          <p class="panel-desc">記錄測驗成績與學習統計</p>
+        </div>
+        <button class="btn btn-primary" id="btnAddGrade">
+          <span>＋</span> 新增成績
+        </button>
+      </div>
+
+      <div class="filter-bar">
+        <label class="filter-label">篩選學生：</label>
+        <select class="filter-select" id="gradeStudentFilter">
+          <option value="">全部學生</option>
+        </select>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="stats-grid" id="statsGrid">
+        <!-- populated by JS -->
+      </div>
+
+      <div class="table-wrapper" style="margin-top:24px;">
+        <table class="data-table" id="gradesTable">
+          <thead>
+            <tr>
+              <th>日期</th>
+              <th>學生</th>
+              <th>科目</th>
+              <th>類型</th>
+              <th>得分</th>
+              <th>滿分</th>
+              <th>百分比</th>
+              <th>備註</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="gradesTableBody">
+            <!-- populated by JS -->
+          </tbody>
+        </table>
+        <div class="empty-state" id="gradesEmpty">
+          <div class="empty-icon">📊</div>
+          <p>還沒有成績記錄</p>
+          <p class="empty-hint">點擊「新增成績」開始記錄學習進度</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===================== MODAL: 學生 ===================== -->
+  <div class="modal-overlay" id="modalStudent">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalStudentTitle">新增學生</h3>
+        <button class="modal-close" data-close="modalStudent">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="formStudent" novalidate>
+          <input type="hidden" id="studentId">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label required">姓名</label>
+              <input type="text" class="form-input" id="studentName" placeholder="請輸入學生姓名" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">科目</label>
+              <input type="text" class="form-input" id="studentSubject" placeholder="例：數學、英文、物理">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label required">年級</label>
+              <select class="form-input" id="studentGrade">
+                <option value="">請選擇年級</option>
+                <optgroup label="國小">
+                  <option value="國小一年級">國小一年級</option>
+                  <option value="國小二年級">國小二年級</option>
+                  <option value="國小三年級">國小三年級</option>
+                  <option value="國小四年級">國小四年級</option>
+                  <option value="國小五年級">國小五年級</option>
+                  <option value="國小六年級">國小六年級</option>
+                </optgroup>
+                <optgroup label="國中">
+                  <option value="國中一年級">國中一年級</option>
+                  <option value="國中二年級">國中二年級</option>
+                  <option value="國中三年級">國中三年級</option>
+                </optgroup>
+                <optgroup label="高中">
+                  <option value="高中一年級">高中一年級</option>
+                  <option value="高中二年級">高中二年級</option>
+                  <option value="高中三年級">高中三年級</option>
+                </optgroup>
+                <option value="大學">大學</option>
+                <option value="其他">其他</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">聯絡方式</label>
+              <input type="text" class="form-input" id="studentContact" placeholder="家長電話或 LINE">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">備註</label>
+            <textarea class="form-textarea" id="studentNotes" placeholder="學生特點、注意事項…" rows="3"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-close="modalStudent">取消</button>
+        <button class="btn btn-primary" id="btnSaveStudent">儲存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: 上課紀錄 ===================== -->
+  <div class="modal-overlay" id="modalSession">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalSessionTitle">新增上課紀錄</h3>
+        <button class="modal-close" data-close="modalSession">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="formSession" novalidate>
+          <input type="hidden" id="sessionId">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label required">學生</label>
+              <select class="form-input" id="sessionStudentId">
+                <option value="">請選擇學生</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">上課日期</label>
+              <input type="date" class="form-input" id="sessionDate">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label required">時長（分鐘）</label>
+              <input type="number" class="form-input" id="sessionDuration" placeholder="例：60" min="1" max="480">
+            </div>
+            <div class="form-group">
+              <label class="form-label required">學生表現</label>
+              <select class="form-input" id="sessionPerformance">
+                <option value="">請評分</option>
+                <option value="1">⭐ 1 — 需要加強</option>
+                <option value="2">⭐⭐ 2 — 待進步</option>
+                <option value="3">⭐⭐⭐ 3 — 普通</option>
+                <option value="4">⭐⭐⭐⭐ 4 — 良好</option>
+                <option value="5">⭐⭐⭐⭐⭐ 5 — 優秀</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label required">上課主題</label>
+            <input type="text" class="form-input" id="sessionTopics" placeholder="例：一元二次方程式、英文時態複習">
+          </div>
+          <div class="form-group">
+            <label class="form-label">老師備註</label>
+            <textarea class="form-textarea" id="sessionNotes" placeholder="課堂觀察、下次注意事項…" rows="3"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-close="modalSession">取消</button>
+        <button class="btn btn-primary" id="btnSaveSession">儲存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: 作業 ===================== -->
+  <div class="modal-overlay" id="modalHomework">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalHomeworkTitle">指派作業</h3>
+        <button class="modal-close" data-close="modalHomework">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="formHomework" novalidate>
+          <input type="hidden" id="homeworkId">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label required">學生</label>
+              <select class="form-input" id="hwStudentId">
+                <option value="">請選擇學生</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">作業標題</label>
+              <input type="text" class="form-input" id="hwTitle" placeholder="例：課本 p.45 練習題">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label required">指派日期</label>
+              <input type="date" class="form-input" id="hwAssignedDate">
+            </div>
+            <div class="form-group">
+              <label class="form-label required">截止日期</label>
+              <input type="date" class="form-input" id="hwDueDate">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">狀態</label>
+            <select class="form-input" id="hwStatus">
+              <option value="未完成">未完成</option>
+              <option value="已完成">已完成</option>
+              <option value="逾期">逾期</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">備註</label>
+            <textarea class="form-textarea" id="hwNotes" placeholder="作業說明、注意事項…" rows="3"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-close="modalHomework">取消</button>
+        <button class="btn btn-primary" id="btnSaveHomework">儲存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== MODAL: 成績 ===================== -->
+  <div class="modal-overlay" id="modalGrade">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modalGradeTitle">新增成績</h3>
+        <button class="modal-close" data-close="modalGrade">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="formGrade" novalidate>
+          <input type="hidden" id="gradeId">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label required">學生</label>
+              <select class="form-input" id="gradeStudentId">
+                <option value="">請選擇學生</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label required">日期</label>
+              <input type="date" class="form-input" id="gradeDate">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label required">科目</label>
+              <input type="text" class="form-input" id="gradeSubject" placeholder="例：數學、英文">
+            </div>
+            <div class="form-group">
+              <label class="form-label required">類型</label>
+              <select class="form-input" id="gradeType">
+                <option value="">請選擇</option>
+                <option value="小考">小考</option>
+                <option value="段考">段考</option>
+                <option value="作業成績">作業成績</option>
+                <option value="模擬考">模擬考</option>
+                <option value="其他">其他</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label required">得分</label>
+              <input type="number" class="form-input" id="gradeScore" placeholder="例：85" min="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label required">滿分</label>
+              <input type="number" class="form-input" id="gradeMaxScore" placeholder="例：100" min="1">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">備註</label>
+            <textarea class="form-textarea" id="gradeNotes" placeholder="考試回饋、需要加強的地方…" rows="2"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost" data-close="modalGrade">取消</button>
+        <button class="btn btn-primary" id="btnSaveGrade">儲存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
