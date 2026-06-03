@@ -443,8 +443,15 @@ function openStudentDetail(id) {
 
 function renderSessions() {
   const filter  = document.getElementById('sessionStudentFilter').value;
+  const search  = document.getElementById('sessionSearch').value.trim().toLowerCase();
   let   records = [...DB.sessions].sort((a,b) => b.date.localeCompare(a.date));
   if (filter) records = records.filter(r => r.studentId === filter);
+  if (search) records = records.filter(r => {
+    const name = studentName(r.studentId).toLowerCase();
+    return name.includes(search) ||
+      (r.topics || '').toLowerCase().includes(search) ||
+      (r.notes  || '').toLowerCase().includes(search);
+  });
 
   const tbody = document.getElementById('sessionsTableBody');
   const empty = document.getElementById('sessionsEmpty');
@@ -466,9 +473,8 @@ function renderSessions() {
       <td>${escapeHtml(s ? s.name : '已刪除')}</td>
       <td>${escapeHtml(s ? s.subject : '—')}</td>
       <td>${r.duration ? r.duration + ' 分鐘' : '—'}</td>
-      <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="${escapeHtml(r.topics)}">${escapeHtml(r.topics || '—')}</td>
-      <td>${r.performance ? stars(r.performance) : '—'}</td>
-      <td>
+      <td title="${escapeHtml(r.topics)}">${escapeHtml(r.topics || '—')}</td>
+      <td style="white-space:nowrap;">
         <div class="table-actions">
           <button class="action-btn action-btn-edit" data-action="edit" data-id="${r.id}">編輯</button>
           <button class="action-btn action-btn-delete" data-action="delete" data-id="${r.id}">刪除</button>
@@ -486,6 +492,7 @@ function renderSessions() {
 }
 
 document.getElementById('sessionStudentFilter').addEventListener('change', renderSessions);
+document.getElementById('sessionSearch').addEventListener('input', renderSessions);
 
 // ── Session modal ──
 
@@ -493,14 +500,15 @@ document.getElementById('btnAddSession').addEventListener('click', () => openSes
 
 function openSessionModal(id) {
   const editing = id ? DB.sessions.find(r => r.id === id) : null;
+  populateStudentDropdowns();
   document.getElementById('modalSessionTitle').textContent = editing ? '編輯上課紀錄' : '新增上課紀錄';
   document.getElementById('sessionId').value          = editing ? editing.id : '';
   document.getElementById('sessionStudentId').value   = editing ? editing.studentId : '';
   document.getElementById('sessionDate').value        = editing ? editing.date : today();
   document.getElementById('sessionDuration').value    = editing ? editing.duration : '';
-  document.getElementById('sessionPerformance').value = editing ? editing.performance : '';
+  document.getElementById('sessionPerformance').value = editing ? String(editing.performance) : '';
   document.getElementById('sessionTopics').value      = editing ? editing.topics : '';
-  document.getElementById('sessionNotes').value       = editing ? editing.notes : '';
+  document.getElementById('sessionNotes').value       = editing ? (editing.notes || '') : '';
   document.querySelectorAll('#formSession .form-input').forEach(el => el.classList.remove('error'));
   openModal('modalSession');
 }
