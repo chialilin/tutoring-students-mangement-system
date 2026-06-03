@@ -530,13 +530,28 @@ body {
   border-radius: var(--radius-lg);
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .data-table {
   width: 100%;
   border-collapse: collapse;
   font-size: .875rem;
+  min-width: 480px;
+}
+
+/* 操作欄固定在右側 */
+.data-table th:last-child,
+.data-table td:last-child {
+  position: sticky;
+  right: 0;
+  background: var(--surface);
+  box-shadow: -2px 0 6px rgba(0,0,0,.06);
+  z-index: 1;
+}
+.data-table thead th:last-child {
+  background: var(--bg);
 }
 
 .data-table thead {
