@@ -472,7 +472,6 @@ function renderSessions() {
       <td>${formatDate(r.date)}</td>
       <td>${escapeHtml(s ? s.name : '已刪除')}</td>
       <td>${escapeHtml(s ? s.subject : '—')}</td>
-      <td>${r.duration ? r.duration + ' 分鐘' : '—'}</td>
       <td title="${escapeHtml(r.topics)}">${escapeHtml(r.topics || '—')}</td>
       <td style="white-space:nowrap;">
         <div class="table-actions">
